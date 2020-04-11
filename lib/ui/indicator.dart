@@ -1,22 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:stopwatch/model/stopwatch_model.dart';
 
-class Indicator extends StatefulWidget {
-  Indicator({Key key}) : super(key: key);
-
+class Indicator extends StatelessWidget {
   @override
-  State<Indicator> createState() => IndicatorState();
+  Widget build(BuildContext context) {
+    return Selector<StopwatchModel, bool>(
+      selector: (context, model) => model.isPlaying,
+      builder: (context, value, child) => _Indicator(isPlaying: value),
+    );
+  }
 }
 
-class IndicatorState extends State<Indicator> with SingleTickerProviderStateMixin<Indicator> {
+class _Indicator extends StatefulWidget {
+  final bool isPlaying;
+
+  _Indicator({Key key, @required this.isPlaying}) : super(key: key);
+
+  @override
+  State<_Indicator> createState() => _IndicatorState();
+}
+
+class _IndicatorState extends State<_Indicator> with SingleTickerProviderStateMixin<_Indicator> {
   bool _isPlaying;
   AnimationController _animationController;
 
   @override
   void initState() {
-    _isPlaying = false;
+    super.initState();
+
+    _isPlaying = widget.isPlaying;
     _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _animationController.addListener(() => setState(() {}));
-    super.initState();
   }
 
   @override
@@ -27,30 +42,18 @@ class IndicatorState extends State<Indicator> with SingleTickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) {
+    if (_isPlaying != widget.isPlaying) {
+      _isPlaying = widget.isPlaying;
+      _animationController.forward().then((_) => _animationController.reverse());
+    }
+
     return Opacity(
       opacity: _animationController.value,
       child: Icon(
-        _isPlaying ? Icons.play_circle_filled : Icons.pause_circle_filled,
+        widget.isPlaying ? Icons.play_circle_filled : Icons.pause_circle_filled,
         color: Colors.white,
         size: 128,
       ),
     );
-  }
-
-  void changeState(bool isPlaying) {
-    if (_isPlaying != isPlaying) {
-      setState(() {
-        _isPlaying = isPlaying;
-      });
-
-      _playAnimation();
-    }
-  }
-
-  Future<void> _playAnimation() async {
-    try {
-      await _animationController.forward().orCancel;
-      await _animationController.reverse().orCancel;
-    } on TickerCanceled {}
   }
 }

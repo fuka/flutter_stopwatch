@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
-import 'package:stopwatch/logic/stopwatch_logic.dart';
+import 'package:provider/provider.dart';
+import 'package:stopwatch/model/stopwatch_model.dart';
 import 'package:stopwatch/ui/help_dialog.dart';
 import 'package:stopwatch/ui/indicator.dart';
 import 'package:stopwatch/ui/number_display.dart';
-import 'package:stopwatch/ui/stopwatch_model.dart';
 
 class MainPage extends StatelessWidget {
   @override
@@ -44,97 +43,73 @@ class MainPage extends StatelessWidget {
   }
 }
 
-class _StopWatchArea extends StatefulWidget {
-  _StopWatchArea({Key key}) : super(key: key);
-
-  @override
-  State<_StopWatchArea> createState() => _StopWatchAreaState();
-}
-
-class _StopWatchAreaState extends State<_StopWatchArea> implements StopwatchCallback {
-  final indicatorKey = GlobalKey<IndicatorState>();
-
-  StopwatchLogic _stopwatchLogic;
-  StopwatchModel _stopwatchModel;
-
-  @override
-  void initState() {
-    _stopwatchLogic = StopwatchLogic(this);
-    _stopwatchModel = StopwatchModel();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _stopwatchLogic?.dispose();
-    super.dispose();
-  }
-
+class _StopWatchArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<StopwatchModel>(
-      model: _stopwatchModel,
-      child: GestureDetector(
-        onLongPress: () {
-          _stopwatchLogic?.reset();
-        },
-        onTap: () {
-          _stopwatchLogic?.toggle();
-        },
-        child: Stack(
-          alignment: AlignmentDirectional.center,
-          children: <Widget>[
-            _buildWatchContainer(),
-            Indicator(key: indicatorKey),
-          ],
-        ),
+    final stopWatchModel = Provider.of<StopwatchModel>(context, listen: false);
+
+    return GestureDetector(
+      onLongPress: () {
+        stopWatchModel.reset();
+      },
+      onTap: () {
+        stopWatchModel.toggle();
+      },
+      child: Stack(
+        alignment: AlignmentDirectional.center,
+        children: <Widget>[
+          _buildWatchContainer(context),
+          Indicator(),
+        ],
       ),
     );
   }
 
-  Widget _buildWatchContainer() {
+  Widget _buildWatchContainer(BuildContext context) {
     return Container(
       color: Colors.black,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          _buildMinutesContainer(),
-          _buildSecondsContainer(),
+          _buildMinutesContainer(context),
+          _buildSecondsContainer(context),
         ],
       ),
     );
   }
 
-  Widget _buildMinutesContainer() {
+  Widget _buildMinutesContainer(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        ScopedModelDescendant<StopwatchModel>(builder: (context, child, model) => NumberDisplay(number: model.upperMin)),
-        ScopedModelDescendant<StopwatchModel>(builder: (context, child, model) => NumberDisplay(number: model.lowerMin)),
+        Selector<StopwatchModel, int>(
+          selector: (context, model) => model.upperMin,
+          builder: (context, value, child) => NumberDisplay(number: value),
+        ),
+        Selector<StopwatchModel, int>(
+          selector: (context, model) => model.lowerMin,
+          builder: (context, value, child) => NumberDisplay(number: value),
+        ),
       ],
     );
   }
 
-  Widget _buildSecondsContainer() {
+  Widget _buildSecondsContainer(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        ScopedModelDescendant<StopwatchModel>(builder: (context, child, model) => NumberDisplay(number: model.upperSec)),
-        ScopedModelDescendant<StopwatchModel>(builder: (context, child, model) => NumberDisplay(number: model.lowerSec)),
+        Selector<StopwatchModel, int>(
+          selector: (context, model) => model.upperSec,
+          builder: (context, value, child) => NumberDisplay(number: value),
+        ),
+        Selector<StopwatchModel, int>(
+          selector: (context, model) => model.lowerSec,
+          builder: (context, value, child) => NumberDisplay(number: value),
+        ),
       ],
     );
-  }
-
-  @override
-  void valueChanged(int upperMin, int lowerMin, int upperSec, int lowerSec) {
-    _stopwatchModel.changeValue(upperMin, lowerMin, upperSec, lowerSec);
-  }
-
-  @override
-  void stateChanged(bool isPlaying) {
-    indicatorKey.currentState.changeState(isPlaying);
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:stopwatch/model/stopwatch_model.dart';
 import 'package:stopwatch/ui/main_screen.dart';
 
 void main() {
@@ -11,7 +13,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Stopwatch',
       theme: ThemeData.dark(),
-      home: MainPage(),
+      home: ChangeNotifierProvider(
+        create: (_) => StopwatchModel(),
+        child: MainPage(),
+      ),
     );
   }
 }
