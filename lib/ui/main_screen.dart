@@ -11,7 +11,7 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Stopwatch"),
+        title: const Text("Stopwatch"),
         actions: <Widget>[
           _buildPopupMenuButton(context),
         ],
@@ -23,9 +23,9 @@ class MainPage extends StatelessWidget {
   Widget _buildPopupMenuButton(BuildContext context) {
     return PopupMenuButton<String>(
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            const PopupMenuItem<String>(value: "ABOUT", child: Text("About")),
-            const PopupMenuItem<String>(value: "HELP", child: Text('Help'))
-          ],
+        const PopupMenuItem<String>(value: "ABOUT", child: const Text("About")),
+        const PopupMenuItem<String>(value: "HELP", child: const Text('Help'))
+      ],
       onSelected: (String value) {
         _select(context, value);
       },

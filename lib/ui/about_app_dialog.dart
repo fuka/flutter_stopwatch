@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AboutAppDialog extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return AboutDialog(

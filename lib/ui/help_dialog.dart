@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HelpDialog extends StatelessWidget {
-  final String content = """
+  final _content = """
   ・タップ：
   　　オン／オフの切り替え
   
@@ -12,11 +12,11 @@ class HelpDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("使い方"),
-      content: Text(content),
+      title: const Text("使い方"),
+      content: Text(_content),
       actions: <Widget>[
         FlatButton(
-          child: Text('閉じる'),
+          child: const Text('閉じる'),
           onPressed: () {
             Navigator.pop(context);
           },

@@ -14,7 +14,7 @@ class IndicatorState extends State<Indicator> with SingleTickerProviderStateMixi
   @override
   void initState() {
     _isPlaying = false;
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _animationController.addListener(() => setState(() {}));
     super.initState();
   }
